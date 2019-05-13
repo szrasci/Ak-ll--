@@ -1,0 +1,52 @@
+#include<Servo.h> //SG90 Servo Motor'umuz için Servo kütüphanemizi yazılıma tanıtıyoruz.
+Servo szr;
+#define led 2 //2.pine LED'imizi tanımlıyoruz.
+const int buton = 6; // 6.pine Butonumuzu tanımlıyoruz.
+int sayac = 0; // Sayacımızı sıfırlıyoruz.
+int butonDurumu = 0; // Buton sayacı tanımlıyoruz.
+int ldrdeger; // LDR değerini okumak için bir değişken tanımlıyoruz.
+#define ldrpin A0 // LDR'mizi A0 pinine tanımlıyoruz.
+
+void setup() {
+ szr.attach(9); // Servo Motor'umuzu 9.pine tanımlıyoruz.
+ pinMode(buton, INPUT); // Butonumuzu Giriş olarak tanımlyoruz.
+ pinMode(led, OUTPUT); // LED'imizi Çıkış olarak tanımlıyoruz.
+ Serial.begin(9600); // Seri ekrandan bilgi alabilmek için veri hızını ayarlıyoruz.
+}
+
+void loop() {
+ ldrdeger=analogRead(ldrpin); // LDR değerini okuyoruz.
+ butonDurumu = digitalRead(buton); // Butona kaç kere basıldığını okuyoruz.
+ if (butonDurumu == HIGH) 
+ {
+ sayac ++;
+ }
+ if(sayac==1) //Butona 1 kere basıldığında ve LDR değeri eğer 300 altında ise motor 90 derece oluyor.
+  {
+  szr.write(0); 
+  digitalWrite(led,0);
+  }
+ if(sayac==0)
+  {
+  if(ldrdeger<=300) // Butona basılmazsa ve LDR değeri eğer 300 altında ise motor 90 derece oluyor.
+   { 
+   szr.write(90);
+   digitalWrite(led,1);
+   }
+  }
+ if(sayac==2) // Butona 2. kez basıldıysa ve LDR değeri eğer 300 üstünde ise motor 0 derece oluyor.
+ { 
+  if(ldrdeger>300)
+   { 
+   digitalWrite(led,0);
+   szr.write(0);
+   }
+  sayac=0;
+ }
+  
+  Serial.print("ldr okunan değer: ");
+  Serial.println(ldrdeger);
+  Serial.print("Sayaç: ");
+  Serial.println(sayac);
+  delay(500);
+}
